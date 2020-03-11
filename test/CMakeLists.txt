@@ -1,0 +1,1 @@
+target_sources(random_test PUBLIC main.cpp)
