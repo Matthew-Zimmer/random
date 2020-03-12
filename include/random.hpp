@@ -41,7 +41,7 @@ namespace Slate::Random
     auto& element(Type&& container)
     {
         auto iter{ std::begin(container) };
-        std::advance(iter, number<std::size_t>(0, container.size()));
+        std::advance(iter, number<std::size_t>(0, container.size() - 1));
         return *iter;
     }
 }
