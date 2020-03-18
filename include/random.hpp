@@ -4,8 +4,8 @@
 
 namespace Slate::Random
 {
-    std::random_device rd{};
-    std::mt19937 gen(rd());
+    extern std::random_device rd;
+    extern std::mt19937 gen;
 
     template <typename Type>
     auto number(Type const& lower, Type const& upper) -> std::enable_if_t<std::is_integral_v<Type>, Type>
@@ -19,8 +19,14 @@ namespace Slate::Random
         return std::uniform_real_distribution<Type>{ lower, upper }(gen);
     }
 
+    template <typename Dis>
+    auto number(Dis& dis)
+    {
+        return dis(gen);
+    }
+
     template <typename T>
-    auto number(T const& bounds)
+    auto bounded_number(T const& bounds)
     {
         return number(-bounds, bounds);
     }
@@ -32,16 +38,21 @@ namespace Slate::Random
         return ((p < (q += std::get<0>(f)) ? std::get<1>(f)(), true : false) || ...);
     }
 
-    bool probability(double prob)
-    {
-        return number(0.0, 1.0) < prob;
-    }
+    bool probability(double prob);
 
     template <typename Type>
     auto& element(Type&& container)
     {
         auto iter{ std::begin(container) };
         std::advance(iter, number<std::size_t>(0, container.size() - 1));
+        return *iter;
+    }
+
+    template <typename Type, typename Dis>
+    auto& element(Type&& container, Dis&& dis)
+    {
+        auto iter{ std::begin(container) };
+        std::advance(iter, number(dis));
         return *iter;
     }
 }
